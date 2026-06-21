@@ -1,6 +1,8 @@
-# knowledge_system
+# ecommerce-rag-customer-service
 
 电商智能客服系统：Spring Boot + RAG（BM25 / PGVector 混合检索）+ Reliability Orchestrator。
+
+详细设计见 [技术文档.md](技术文档.md)。
 
 ## 技术栈
 
@@ -69,11 +71,19 @@ src/test/resources/benchmark/      # Golden 数据集与评测问题
 docs/                              # 运维文档（如 embedding 迁移 runbook）
 ```
 
+## 文档
+
+| 文档 | 说明 |
+|------|------|
+| [技术文档.md](技术文档.md) | 架构、Reliability 编排、API、缓存 |
+| [docs/embedding-migration-runbook.md](docs/embedding-migration-runbook.md) | 1536→768 维迁移步骤 |
+
 ## 推送到 GitHub
 
+仓库地址：[github.com/xiiiiimu/ecommerce-rag-customer-service](https://github.com/xiiiiimu/ecommerce-rag-customer-service)
+
 ```powershell
-git remote add origin https://github.com/YOUR_USERNAME/knowledge_system.git
-git branch -M main
+git remote add origin https://github.com/xiiiiimu/ecommerce-rag-customer-service.git
 git push -u origin main
 ```
 

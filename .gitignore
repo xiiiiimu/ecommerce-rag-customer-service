@@ -39,6 +39,8 @@ application-local.properties
 logs/
 uploads/
 *.log
+eval_results.txt
+miss_cases.csv
 
 ### OS ###
 .DS_Store
