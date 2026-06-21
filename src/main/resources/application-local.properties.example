@@ -1,0 +1,11 @@
+# Copy to application-local.properties (gitignored) for local secrets.
+# Spring Boot auto-loads application-local.properties from the same directory.
+
+spring.ai.openai.api-key=your-deepseek-api-key
+spring.datasource.password=your-db-password
+
+# Optional overrides
+# spring.datasource.url=jdbc:postgresql://127.0.0.1:5433/knowledge_db
+# spring.datasource.username=postgres
+# spring.ai.ollama.base-url=http://localhost:11434
+# server.tomcat.basedir=E:/temp

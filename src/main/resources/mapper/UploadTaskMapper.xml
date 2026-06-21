@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.knowledge_system.mapper.UploadTaskMapper">
+
+    <resultMap id="UploadTaskMap" type="com.example.knowledge_system.entity.UploadTask">
+        <id property="id" column="id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="fileName" column="file_name"/>
+        <result property="status" column="status"/>
+        <result property="errorMsg" column="error_msg"/>
+        <result property="createTime" column="create_time"/>
+        <result property="finishTime" column="finish_time"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.example.knowledge_system.entity.UploadTask">
+        INSERT INTO upload_task
+        (
+        task_id,
+        file_name,
+        status,
+        error_msg,
+        create_time,
+        finish_time,
+        total_chunks,
+        processed_chunks,
+        success_chunks,
+        failed_chunks,
+        retry_count,
+        file_path,
+        doc_type,
+        upload_status
+        )
+        VALUES
+        (
+        #{taskId},
+        #{fileName},
+        #{status},
+        #{errorMsg},
+        #{createTime},
+        #{finishTime},
+        COALESCE(#{totalChunks}, 0),
+        COALESCE(#{processedChunks}, 0),
+        COALESCE(#{successChunks}, 0),
+        COALESCE(#{failedChunks}, 0),
+        COALESCE(#{retryCount}, 0),
+        #{filePath},
+        #{docType},
+        #{uploadStatus}
+        )
+    </insert>
+
+    <update id="updateStatus">
+        UPDATE upload_task
+        SET status = #{status},
+        error_msg = #{errorMsg},
+        finish_time = CASE
+        WHEN #{status} = 'SUCCESS' OR #{status} = 'FAILED' THEN CURRENT_TIMESTAMP
+        ELSE finish_time
+        END
+        WHERE task_id = #{taskId}
+    </update>
+
+    <select id="findByTaskId" resultType="com.example.knowledge_system.entity.UploadTask">
+        SELECT
+        id,
+        task_id AS taskId,
+        file_name AS fileName,
+        status,
+        error_msg AS errorMsg,
+        create_time AS createTime,
+        finish_time AS finishTime,
+        total_chunks AS totalChunks,
+        processed_chunks AS processedChunks,
+        success_chunks AS successChunks,
+        failed_chunks AS failedChunks,
+        retry_count AS retryCount,
+        file_path AS filePath,
+        doc_type AS docType,
+        upload_status AS uploadStatus
+        FROM upload_task
+        WHERE task_id = #{taskId}
+    </select>
+    <update id="markProcessingIfAllowed">
+        UPDATE upload_task
+        SET status = 'PROCESSING'
+        WHERE task_id = #{taskId}
+        AND status IN ('PENDING', 'FAILED')
+    </update>
+    <update id="initProgress">
+        UPDATE upload_task
+        SET total_chunks = #{totalChunks},
+        processed_chunks = 0,
+        success_chunks = 0,
+        failed_chunks = 0
+        WHERE task_id = #{taskId}
+    </update>
+    <update id="increaseSuccessChunks">
+        UPDATE upload_task
+        SET processed_chunks = processed_chunks + 1,
+        success_chunks = success_chunks + 1
+        WHERE task_id = #{taskId}
+    </update>
+    <update id="increaseFailedChunks">
+        UPDATE upload_task
+        SET processed_chunks = processed_chunks + 1,
+        failed_chunks = failed_chunks + 1
+        WHERE task_id = #{taskId}
+    </update>
+    <update id="increaseRetryCount">
+        UPDATE upload_task
+        SET retry_count = retry_count + 1,
+        error_msg = #{errorMsg}
+        WHERE task_id = #{taskId}
+    </update>
+
+    <update id="markDead">
+        UPDATE upload_task
+        SET status = 'DEAD',
+        error_msg = #{errorMsg},
+        finish_time = CURRENT_TIMESTAMP
+        WHERE task_id = #{taskId}
+    </update>
+</mapper>
